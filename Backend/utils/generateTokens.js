@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const generateRefreshAndAccesTokens = async (user, res) => {
+export const generateRefreshAndAccesTokens = async (user) => {
     const tokenAccess = jwt.sign({
         id: user._id,
         fullName: user.fullName,
@@ -20,7 +20,6 @@ const generateRefreshAndAccesTokens = async (user, res) => {
             expiresIn: process.env.REFRESH_JWT_TOKEN_EXPIRY
         });
 
-        return { tokenAccess, tokenAccess }
+        return { tokenAccess, tokenRefresh }
 }
 
-export default generateRefreshAndAccesTokens

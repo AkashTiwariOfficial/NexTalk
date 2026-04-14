@@ -10,10 +10,16 @@ app.use(express({limit: "16kb"}));
 app.use(express.urlencoded({extended: true, limit: "16kb"}));
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(( err, req, res, next) => {
+    res.status(err.statusCode || 500).json({
+        success: err.success || false,
+        message: err.message || "Internal Server Error",
+        errors: err.errors || []
+    });
+})
 
 
-const PORT = process.env.PORT || 5000;
-app.use("/api/auth", authRoutes);
+app.use("/v1/api/auth", authRoutes);
 
 
 
