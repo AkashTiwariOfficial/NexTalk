@@ -1,7 +1,8 @@
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.js";
-import { ApiErrors } from "../utils/ApiErrors.js";
-import { ApiResponses } from "../utils/ApiResponses.js";
+import  ApiErrors  from "../utils/ApiErrors.js";
+import  ApiResponses  from "../utils/ApiResponses.js";
+import  { asyncHandler }  from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateRefreshAndAccesTokens } from "../utils/generateTokens.js";
 
@@ -11,7 +12,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const { fullName, username, email, password, confirmPassword, gender } = req.body;
 
-    if ([fullName, username, email, password, gender].some((field) => field?.trim() === "")) {
+    if ([fullName, username, email, password, gender].some((field) => !field || field?.trim() === "")) {
         throw new ApiErrors(400, "All fields are Requried!");
     }
 
@@ -33,7 +34,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if (password !== confirmPassword) {
-        throw new ApiErrors(401, "Password didn't match");
+        throw new ApiErrors(401, "Password does not match");
     }
 
     const avatarFilePath = req.files?.avatar[0]?.path;
@@ -79,7 +80,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { username, email, password } = req.body;
 
-    if (!(username || email)) {
+    if (!(username || email || password)) {
         throw new ApiErrors(400, "username or email is required!");
     }
 
@@ -88,7 +89,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 
     if (!loggedUser) {
-        throw new ApiErrors(404, "user does not exists")
+        throw new ApiErrors(401, "Invalid user credentials")
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, loggedUser.password);
@@ -97,9 +98,9 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiErrors(401, "Invalid user credentials")
     }
 
-    const user = await findById(loggedUser._id).select("-password");
+    const user = await User.findById(loggedUser._id).select("-password");
 
-    const { tokenAccess, tokenRefresh } = generateRefreshAndAccesTokens(user);
+    const { tokenAccess, tokenRefresh } =  generateRefreshAndAccesTokens(user);
 
     const options = {
         httpOnly: true,

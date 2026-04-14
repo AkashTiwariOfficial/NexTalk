@@ -11,7 +11,9 @@ const PORT = process.env.PORT;
 
 connectToMongoDb()
     .then(() => {
+        app.listen(PORT, () => {
         console.log(`NexTalk running on port ${PORT}`)
+        })
     }).catch((error) => {
         console.log("MongoDb connection failed!", error)
     }

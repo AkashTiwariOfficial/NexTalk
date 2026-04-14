@@ -5,8 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon Backend/server.js",
-    "start": "node Backend/server.js"
+    "dev": "nodemon Backend/server.js",
+    "index": "node Backend/server.js",
+    "start": "cd Frontend && npx vite",
+    "server": "concurrently \"npm run dev \" \"npm run start\""
   },
   "keywords": [],
   "author": "",
