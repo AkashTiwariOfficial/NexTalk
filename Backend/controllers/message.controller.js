@@ -2,8 +2,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Conversation } from '../models/conversation.model.js'
 import { Message } from "../models/message.model.js";
 import ApiResponses from "../utils/ApiResponses.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const sendMessage = asyncHandler(async (req, res) => {
+
     const { id: recieverId } = req.params;
     const { message } = req.body;
     const senderId = req.user?._id;
@@ -14,22 +16,35 @@ const sendMessage = asyncHandler(async (req, res) => {
         participants: { $all: [senderId, recieverId] }
     })
 
+
     if (!conversation) {
         conversation = await Conversation.create({
             participants: [senderId, recieverId]
         })
     }
 
-    const newMessage = new Message({ message, senderId, recieverId });
-    await conversation.messages.push(message);
+    let fileMessage;
+    const uploadedFiles = [];
+ 
+    for (const file of req?.files) {
+        fileMessage = await uploadOnCloudinary(file?.path);
+           const fileStructure = {url: fileMessage.url, size: fileMessage.bytes, orignalName: fileMessage.originalName, fileTypes: fileMessage.resource_type};
+           uploadedFiles.push(fileStructure);
+    }
 
-    const sentMessage = new Promise.all([
-        Conversation.save(),
-        Message.save()
+    const newMessage = new Message({ message: message, attachements: uploadedFiles, senderId, recieverId });
+    await conversation.messages.push(newMessage._id);
+
+    await Promise.all([
+        conversation.save(),
+        newMessage.save()
     ])
+
+    const sentMessage = newMessage;
 
     return res.status(200)
         .json(new ApiResponses(200, sentMessage, "message sent successfully"));
+
 })
 
 const getAllMessages = asyncHandler(async (req, res) => {
@@ -40,12 +55,8 @@ const getAllMessages = asyncHandler(async (req, res) => {
         participants: { $all: [senderId, recieverId] }
     }).populate("messages")
 
-    if (!conversation) {
-        console.log('no messages found');
-    }
-
     return res.status(200).json(
-        new ApiResponses(200, conversation, "Conversation fetched successfully")
+        new ApiResponses(200, conversation, "All messages fetched successfully")
     )
 })
 

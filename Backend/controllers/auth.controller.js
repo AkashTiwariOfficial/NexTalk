@@ -37,15 +37,16 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiErrors(401, "Password does not match");
     }
 
-    const avatarFilePath = req.files?.avatar[0]?.path;
+    const avatarFilePath = req.file?.path;
 
     let Avatar;
 
     if (avatarFilePath) {
         Avatar = await uploadOnCloudinary(avatarFilePath);
+         Avatar = Avatar?.url;  
     } else {
         Avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}&gender=${gender}`;
-    }
+      }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 

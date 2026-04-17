@@ -13,8 +13,16 @@ const messageSchema = new mongoose.Schema({
     },
     message: {
         type: String,
-        required: true
+        required: true,
     },
+      attachements: [
+            {
+                url: String,
+                size: Number,
+                orignalName: String,
+                fileTypes: String
+            }
+        ]
 }, { timestamps: true });
 
 export const Message = mongoose.model("Message", messageSchema);

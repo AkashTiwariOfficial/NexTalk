@@ -1,5 +1,7 @@
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
+import messageRoutes from "./routes/message.routes.js"
+import userRoutes from "./routes/user.routes.js"
 import express from "express";
 
 
@@ -12,6 +14,8 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 app.use("/v1/api/auth", authRoutes);
+app.use("/v1/api/messages", messageRoutes);
+app.use("/v1/api/users", userRoutes);
 
 
 
