@@ -9,20 +9,20 @@ const messageSchema = new mongoose.Schema({
     recieverId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: true 
     },
     message: {
         type: String,
         required: true,
     },
-      attachements: [
-            {
-                url: String,
-                size: Number,
-                orignalName: String,
-                fileTypes: String
-            }
-        ]
+    attachements: [
+        {
+            url: String,
+            size: Number,
+            orignalName: String,
+            fileTypes: String
+        }
+    ]
 }, { timestamps: true });
 
 export const Message = mongoose.model("Message", messageSchema);

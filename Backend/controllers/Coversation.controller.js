@@ -7,7 +7,16 @@ import ApiErrors from "../utils/ApiErrors.js";
 
 
 const createGroup = asyncHandler(async (req, res) => {
-    const { groupName, groupDescription } = req.body
+
+    const { groupName, groupDescription, participants } = req.body
+
+    if(!(groupName || participants)) {
+      throw new ApiErrors(400, "Group name and participants are required");
+    }
+
+    if(participants.length < 2) {
+        throw new ApiErrors(400, "Atleast 2 participants are required");
+    }
 
     const isGroupExists = await Conversation.findOne({
         groupName: groupName,
@@ -32,11 +41,21 @@ const createGroup = asyncHandler(async (req, res) => {
 
     const NewGroup = await Conversation.create({
         groupName: groupName,
-        groupDescription: groupDescription,
+        groupDescription: groupDescription || "",
         groupImage: groupImage,
         public_id: public_id,
         isGroup: true,
-        participants: [req.user._id],
+        participants: participants,
         admin: req.user._id
     })
+
+    if(!NewGroup){
+      throw new ApiErrors(500, "Error while creating new group");
+    }
+
+    return res.status(201)
+    .json(
+        new ApiResponses(201, NewGroup, "Group created successfully")
+    )
+
 })

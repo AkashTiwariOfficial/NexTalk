@@ -22,9 +22,6 @@ const sendMessage = asyncHandler(async (req, res) => {
           participants: { $all: [senderId, recieverId] }
       })
  }
-    console.log(conversation);
-    console.log(senderId);
-    console.log(recieverId);
 
     if (!conversation) {
         conversation = await Conversation.create({
