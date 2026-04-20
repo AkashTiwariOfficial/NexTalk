@@ -11,11 +11,20 @@ const sendMessage = asyncHandler(async (req, res) => {
     const senderId = req.user?._id;
 
     let conversation;
-
-    conversation = await Conversation.findOne({
-        participants: { $all: [senderId, recieverId] }
-    })
-
+    
+  if (senderId.toString() ===  recieverId.toString()){
+         conversation = await Conversation.findOne({
+          participants: senderId,
+          $expr: { $eq: [ { $size: "$participants" }, 1]}
+      })
+  } else {
+      conversation = await Conversation.findOne({
+          participants: { $all: [senderId, recieverId] }
+      })
+ }
+    console.log(conversation);
+    console.log(senderId);
+    console.log(recieverId);
 
     if (!conversation) {
         conversation = await Conversation.create({
@@ -25,11 +34,11 @@ const sendMessage = asyncHandler(async (req, res) => {
 
     let fileMessage;
     const uploadedFiles = [];
- 
+
     for (const file of req?.files) {
         fileMessage = await uploadOnCloudinary(file?.path);
-           const fileStructure = {url: fileMessage.url, size: fileMessage.bytes, orignalName: fileMessage.originalName, fileTypes: fileMessage.resource_type};
-           uploadedFiles.push(fileStructure);
+        const fileStructure = { url: fileMessage.url, size: fileMessage.bytes, orignalName: fileMessage.originalName, fileTypes: fileMessage.resource_type };
+        uploadedFiles.push(fileStructure);
     }
 
     const newMessage = new Message({ message: message, attachements: uploadedFiles, senderId, recieverId });

@@ -36,7 +36,10 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true
-        }
+        },
+        avatar_public_id: {
+            type: String,
+        },
     },
     {
         timestamps: true

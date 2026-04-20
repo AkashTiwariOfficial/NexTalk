@@ -39,11 +39,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatarFilePath = req.file?.path;
 
-    let Avatar;
+    let Avatar, public_id;
 
     if (avatarFilePath) {
         Avatar = await uploadOnCloudinary(avatarFilePath);
          Avatar = Avatar?.url;  
+         public_id = Avatar?.public_id;
     } else {
         Avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}&gender=${gender}`;
       }
@@ -56,7 +57,8 @@ const registerUser = asyncHandler(async (req, res) => {
         email: email,
         avatar: Avatar,
         gender: gender,
-        password: hashedPassword
+        password: hashedPassword,
+        avatar_public_id: public_id || ""
     });
 
     if (!user) {
