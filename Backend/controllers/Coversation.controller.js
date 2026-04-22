@@ -43,7 +43,7 @@ const createGroup = asyncHandler(async (req, res) => {
         groupName: groupName,
         groupDescription: groupDescription || "",
         groupImage: groupImage,
-        public_id: public_id,
+        public_id: public_id || "",
         isGroup: true,
         participants: participants,
         admin: req.user._id

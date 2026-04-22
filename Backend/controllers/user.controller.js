@@ -13,3 +13,14 @@ export const fetchAlUser = asyncHandler(async (req, res) => {
         .json(new ApiResponses(200, conversations, "User conversations fetched successfully"));
 })
 
+export const getAllUsers = asyncHandler( async ( req, res ) => {
+
+    const allUsers = await User.find();
+
+    return res.status(200)
+    .json(
+        new ApiResponses(200, allUsers, "All users fetched successfully")
+    )
+    
+})
+
