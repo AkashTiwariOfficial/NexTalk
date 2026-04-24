@@ -185,14 +185,14 @@ const sendOtp = asyncHandler(async (req, res) => {
         throw new ApiErrors(400, "Error while generating OTP");
     }
 
-        const users = await User.findById(req.user?._id)
+    const users = await User.findById(req.user?._id)
 
-        try {
-            await transporter.sendMail({
-                from: "noreply@Nextalk.com",
-                to: users.email,
-                subject: "Your NexTalk OTP Code",
-                html: `
+    try {
+        await transporter.sendMail({
+            from: "noreply@Nextalk.com",
+            to: users.email,
+            subject: "Your NexTalk OTP Code",
+            html: `
     <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px">
       
       <h2 style="margin-bottom: 8px;">NexTalk Verification</h2>
@@ -224,25 +224,25 @@ const sendOtp = asyncHandler(async (req, res) => {
       
     </div>
   `
-            });
-        } catch (error) {
-            throw new ApiErrors(400, error.message || "Sending of email failed");
-        }
+        });
+    } catch (error) {
+        throw new ApiErrors(400, error.message || "Sending of email failed");
+    }
 
-        const newOtp = await bcrypt.hash(otp.toString(), 10)
+    const jwtOtp = jwt.sign({
+        id: req.user?._id,
+        otp: otp,
+        expiriesIn: expiryIn
+    },
+        process.env.OTP_JWT_TOKEN_SECRET,
+        {
+            expiresIn: expiryIn
+        })
 
-        const user = await User.findByIdAndUpdate(req.user?._id,
-            {
-                $set: {
-                    otp: newOtp,
-                    expiryIn: expiryIn,
-                }
-            }, { new: true }
-        )
-
-        return res
-            .status(200)
-            .json(new ApiResponses(200, {}, "Otp sent Through Email to user"))
+    return res
+        .status(200)
+        .cookie("otpToken", jwtOtp)
+        .json(new ApiResponses(200, {}, "Otp sent Through Email to user"))
 
 })
 
@@ -298,19 +298,19 @@ const sendOtpforgotpassword = asyncHandler(async (req, res) => {
             throw new ApiErrors(400, error.message || "Sending of email failed");
         }
 
-        const newOtp = await bcrypt.hash(otp.toString(), 10)
-
-        await User.findByIdAndUpdate(user._id,
+        const jwtOtp = jwt.sign({
+            id: user._id,
+            otp: otp,
+            expiriesIn: expiryIn
+        },
+            process.env.OTP_JWT_TOKEN_SECRET,
             {
-                $set: {
-                    otp: newOtp,
-                    expiryIn: expiryIn,
-                }
-            }, { new: true }
-        )
+                expiresIn: expiryIn
+            })
 
         return res
             .status(200)
+            .cookie("otpToken", jwtOtp)
             .json(new ApiResponses(200, {}, "Otp sent Through Email to user"))
 
     } catch (error) {
@@ -327,91 +327,29 @@ const otpVerification = asyncHandler(async (req, res) => {
         throw new ApiErrors(400, "Otp is requried for email verification  to change password ");
     }
 
-    const clearOtp = async () => {
-        await User.findByIdAndUpdate(req.user?._id,
-            {
-                $set: {
-                    otp: "",
-                    expiryIn: ""
-                }
-            }, { new: true }
-        )
-    }
-    try {
-        const user = await User.findById(req.user?._id)
+    const token = req.cookies?.otpToken || req.header("Authorization")?.replace(/^Bearer\s*/, "");
+    const decode = jwt.verify(token, process.env.OTP_JWT_TOKEN_SECRET);
 
-        if (Date.now() > parseInt(user.expiryIn)) {
-            await clearOtp();
+    const user = await User.findById(decode.id)
+
+    try {
+        if (Date.now() > parseInt(decode?.expiriesIn)) {
+            res.clearCookie("otpToken");
             throw new ApiErrors(400, "Error: Otp expired or Invalid. Try again");
         }
 
-        const securedOtp = await bcrypt.compare(otp.toString(), user.otp)
-
-        if (!securedOtp) {
+        if (otp.toString() !== decode?.otp) {
+            res.clearCookie("otpToken");
             throw new ApiErrors(401, "Error: Otp expired or Invalid. Try again");
         }
 
-        await clearOtp()
-
         return res
             .status(200)
+            .clearCookie("otpToken")
             .json(new ApiResponses(200, {}, "OTP verified successfully"));
     } catch (error) {
-        clearOtp()
-        throw new ApiErrors(500, error.message || "Internal server error while verying otp")
-    }
-
-})
-
-const otpVerificationForgotPassword = asyncHandler(async (req, res) => {
-
-    const { username, email, otp } = req.body
-
-    if (!(username || email)) {
-        throw new ApiErrors(400, "username or email is required")
-    }
-
-    const user = await User.findOne({
-        $or: [{ username }, { email }]
-    })
-
-    if (!user) {
-        throw new ApiErrors(404, "User does not exists");
-    }
-
-    const clearOtp = async () => {
-        await User.findByIdAndUpdate(user?._id,
-            {
-                $set: {
-                    otp: "",
-                    expiryIn: null
-                }
-            }, { new: true }
-        )
-    }
-    try {
-
-        if (Date.now() > parseInt(user.expiryIn)) {
-            await clearOtp();
-            throw new ApiErrors(400, "Error: Otp expired or Invalid. Try again");
-        }
-
-        const securedOtp = await bcrypt.compare(otp.toString(), user.otp)
-
-        if (!securedOtp) {
-            throw new ApiErrors(401, "Error: Otp expired or Invalid. Try again");
-        }
-
-        const resetToken = await user.generateResetToken(user._id)
-
-        await clearOtp()
-
-        return res
-            .status(200)
-            .json(new ApiResponses(200, { resetToken }, "OTP verified successfully"));
-    } catch (error) {
-        clearOtp()
-        throw new ApiErrors(500, error.message || "Internal server error while verying otp")
+        res.clearCookie("otpToken");
+        throw new ApiErrors(error.statusCode || 500, error.message || "Internal server error while verifying otp");
     }
 
 })
@@ -429,27 +367,29 @@ const refreshAccessandRefreshTokens = asyncHandler(async (req, res) => {
     try {
         const decodedToken = await jwt.verify(incomingRefreshToken, process.env.REFRESH_JWT_TOKEN_SECRET)
 
-        const user = await User.findById(decodedToken?._id)
+        const user = await User.findById(decodedToken?.id)
 
         if (!user) {
             throw new ApiErrors(401, "Invalid refresh token");
         }
 
-        if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiErrors(401, "Refresh token is either expired or used");
-        }
+        const { tokenAccess, tokenRefresh } = generateRefreshAndAccesTokens(user);
 
         const options = {
             httpOnly: true,
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+            sameSite: "strict",
             secure: true
         }
 
-        const { accessToken, refreshToken } = await generateAccessTokenandRefreshToken(user._id)
-
-        return res
-            .status(200)
-            .cookie("AccessToken", accessToken, options)
-            .cookie("RefreshToken", refreshToken, options)
+        return res.status(200)
+            .cookie("accessToken", tokenAccess, {
+                httpOnly: true,
+                maxAge: 1 * 24 * 60 * 60 * 1000,
+                sameSite: "strict",
+                secure: true
+            })
+            .cookie("refreshToken", tokenRefresh, options)
             .json(
                 new ApiResponses(200, {
                     accessToken,
@@ -471,9 +411,8 @@ const changePassword = asyncHandler(async (req, res) => {
         throw new ApiErrors(400, "Both fields are required");
     }
 
-    try {
         const user = await User.findById(req.user?._id)
-        const ispasswordCorrect = await user.isPasswordCorrect(oldPassword)
+        const ispasswordCorrect = await bcrypt.compare(oldPassword, user?.password)
 
         if (!ispasswordCorrect) {
             throw new ApiErrors(400, "Invalid password");
@@ -485,9 +424,7 @@ const changePassword = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(new ApiResponses(200, {}, "Password was changed Successfully"))
-    } catch (error) {
-        throw new ApiErrors(500, error.message || "Internal Server Error while changing password");
-    }
+
 })
 
 
@@ -495,5 +432,9 @@ const changePassword = asyncHandler(async (req, res) => {
 export {
     registerUser,
     loginUser,
-    logOutUser
+    logOutUser,
+    sendOtpforgotpassword,
+    otpVerification,
+    refreshAccessandRefreshTokens,
+    changePassword
 }
