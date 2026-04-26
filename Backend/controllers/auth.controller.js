@@ -5,6 +5,8 @@ import ApiResponses from "../utils/ApiResponses.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateRefreshAndAccesTokens } from "../utils/generateTokens.js";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 
 
@@ -162,91 +164,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 const sendOtp = asyncHandler(async (req, res) => {
-
-    const { username, email } = req.body
-
-    if (!(username || email)) {
-        throw new ApiErrors(400, "username or email is required")
-    }
-
-    const user = await User.findOne({
-        $or: [{ username }, { email }]
-    })
-
-    if (!user) {
-        throw new ApiErrors(404, "User does not exists");
-    }
-
-    const { otp, expiryIn, expTime } = generateOtp();
-
-    if (!(otp && expiryIn)) {
-        throw new ApiErrors(400, "Error while generating OTP");
-    }
-
-    const users = await User.findById(req.user?._id)
-
-    try {
-        await transporter.sendMail({
-            from: "noreply@Nextalk.com",
-            to: users.email,
-            subject: "Your NexTalk OTP Code",
-            html: `
-    <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px">
-      
-      <h2 style="margin-bottom: 8px;">NexTalk Verification</h2>
-      
-      <p style="padding-top: 14px; border-top: 1px solid #eaeaea">
-        To continue, please use the following One Time Password (OTP):
-      </p>
-      
-      <p style="font-size: 24px; font-weight: bold; letter-spacing: 2px;">
-        ${otp}
-      </p>
-      
-      <p>
-        This OTP is valid for <strong>10 minutes</strong> until <strong>${expTime}</strong>.
-      </p>
-      
-      <p>
-        Do not share this OTP with anyone. If you did not request this, you can safely ignore this email.
-      </p>
-      
-      <p style="margin-top: 20px;">
-        NexTalk will never ask for your OTP or login credentials. Stay alert and avoid phishing attempts.
-      </p>
-      
-      <p style="margin-top: 20px;">
-        Thanks,<br/>
-        <strong>NexTalk Team</strong>
-      </p>
-      
-    </div>
-  `
-        });
-    } catch (error) {
-        throw new ApiErrors(400, error.message || "Sending of email failed");
-    }
-
-    const jwtOtp = jwt.sign({
-        id: req.user?._id,
-        otp: otp,
-        expiriesIn: expiryIn
-    },
-        process.env.OTP_JWT_TOKEN_SECRET,
-        {
-            expiresIn: expiryIn
-        })
-
-    return res
-        .status(200)
-        .cookie("otpToken", jwtOtp)
-        .json(new ApiResponses(200, {}, "Otp sent Through Email to user"))
-
-})
-
-const sendOtpforgotpassword = asyncHandler(async (req, res) => {
 
     const { username, email } = req.body
 
@@ -299,7 +217,7 @@ const sendOtpforgotpassword = asyncHandler(async (req, res) => {
         }
 
         const jwtOtp = jwt.sign({
-            id: user._id,
+            id: users._id,
             otp: otp,
             expiriesIn: expiryIn
         },
@@ -392,8 +310,8 @@ const refreshAccessandRefreshTokens = asyncHandler(async (req, res) => {
             .cookie("refreshToken", tokenRefresh, options)
             .json(
                 new ApiResponses(200, {
-                    accessToken,
-                    refreshToken: refreshToken
+                    accessToken: tokenAccess,
+                    refreshToken: tokenRefresh
                 },
                     "Access Token refreshed successfully"
                 )
@@ -433,7 +351,7 @@ export {
     registerUser,
     loginUser,
     logOutUser,
-    sendOtpforgotpassword,
+    sendOtp,
     otpVerification,
     refreshAccessandRefreshTokens,
     changePassword
