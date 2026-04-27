@@ -6,7 +6,7 @@ import ApiErrors from "../utils/ApiErrors.js";
 
 
 
-const createGroup = asyncHandler(async (req, res) => {
+export const createGroup = asyncHandler(async (req, res) => {
 
     const { groupName, groupDescription, participants } = req.body
 

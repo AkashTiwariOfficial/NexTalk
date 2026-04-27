@@ -6,6 +6,16 @@ const conversationSchema = new mongoose.Schema({
         ref: "User",
         required: true
     }],
+    deletedFor: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
+    clearedAT: {
+        type: Map,
+        of: Date,
+    },
     messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",
@@ -29,7 +39,7 @@ const conversationSchema = new mongoose.Schema({
         type: String
     },
     group_public_id: {
-       type: String
+        type: String
     }
 }, { timestamps: true });
 
