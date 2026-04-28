@@ -31,10 +31,10 @@ const conversationSchema = new mongoose.Schema({
     groupImage: {
         type: String
     },
-    groupAdmin: {
+    groupAdmin: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    },
+    }],
     groupDescription: {
         type: String
     },

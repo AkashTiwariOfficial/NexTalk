@@ -72,15 +72,17 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const getAllMessages = asyncHandler(async (req, res) => {
     const { id: conversationId } = req.params;
-
-    const conversation = await Conversation.findById(conversationId,{
+    
+    const conversation = await Conversation.findById(conversationId);
+    const clearedTime = conversation.clearedAt?.get(req.user?._id);
+    const messages = await Message.find(conversationId, {
         createdAt: {
-            $gt: clearedAt || Date.now(0)
+            $gt: clearedTime || Date.now(0)
         }
-    }).populate("messages")
+    })
 
     return res.status(200).json(
-        new ApiResponses(200, conversation, "All messages fetched successfully")
+        new ApiResponses(200, messages, "All messages fetched successfully")
     )
 })
 

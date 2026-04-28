@@ -90,7 +90,7 @@ export const upadteAvatar = asyncHandler(async (req, res) => {
         await deleteFromCloudinary(req.user?.avatar_public_id, "image");
       }
     } catch (error) {
-      await deleteFromCloudinary(avatar.public_id)
+      await deleteFromCloudinary(avatar.public_id, "image")
       throw new ApiErrors(500, "Failed to delete old avatar, rollback new upload")
     }
 
