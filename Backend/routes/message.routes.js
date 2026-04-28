@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllMessages, sendMessage } from "../controllers/message.controller.js"
+import { deleteConversation, deleteMessage, editMessageContent, getAllMessages, sendMessage } from "../controllers/message.controller.js"
 import { verifyJwt } from "../middlewares/auth.middleware.js"
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -14,6 +14,21 @@ router.route("/sendMessage/:id").post(
 router.route("/getAllMessages/:id").post(
     verifyJwt,
     getAllMessages
+)
+
+router.route("/delete-message/:id").patch(
+    verifyJwt,
+    deleteMessage
+)
+
+router.route("/delete-conversation/:id").patch(
+    verifyJwt,
+    deleteConversation
+)
+
+router.route("/update-message/:messageId").patch(
+    verifyJwt,
+    editMessageContent
 )
 
 export default router

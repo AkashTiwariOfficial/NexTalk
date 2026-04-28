@@ -156,6 +156,39 @@ export const deleteGroup = asyncHandler(async (req, res) => {
 })
 
 
+export const removeUser = asyncHandler(async ( req, res ) => {
+  const { conversationId } = req.params;
+  const { userId } = req.body;
+
+  if (!conversationId) {
+    throw new ApiErrors(404, "conversationId is required!");
+  }
+
+  const group = await Conversation.findById({ _id: conversationId, isGroup: true });
+
+  if (!group) {
+    throw new ApiErrors(409, "Group does not exists");
+  }
+
+  if (group.groupAdmin.includes(req.user?._id)) {
+    throw new ApiErrors(401, "You are not authorized to delete the group");
+  }
+
+  await Conversation.findByIdAndUpdate(conversationId, {
+    $pull:{
+    participants: userId
+    },
+    $addToSet: {
+      deletedFor: userId
+    }  
+  }, { new: true });
+
+  return res.status(200)
+    .json(new ApiResponses(200, {}, "user was removed from group successfully"))
+
+})
+
+
 export const toggleGroupAdmins = asyncHandler(async (req, res) => {
   const { conversationId } = req.params;
   const { AdminId } = req.body;
