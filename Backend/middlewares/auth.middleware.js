@@ -4,8 +4,11 @@ import ApiErrors from '../utils/ApiErrors.js';
 import { User } from '../models/user.model.js';
 
 export const verifyJwt = asyncHandler( async( req, res, next ) => {
-     const token =  req.cookies?.accessToken || req.header("Authorization")?.replace(/^Bearer\s*/, "");
-
+const token =
+  req.cookies?.accessToken ||
+  req.header("Authorization")?.replace(/^Bearer\s*/, "");
+   
+     
      if(!token){
         throw new ApiErrors(401, "Unauthorized Access!");
      }
