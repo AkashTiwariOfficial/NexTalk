@@ -1,5 +1,5 @@
 import { Conversation } from "../models/conversation.model.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiErrors from "../utils/ApiErrors.js";
 import { isFloat64Array } from "util/types";
 import ApiResponses from "../utils/ApiResponses.js";
