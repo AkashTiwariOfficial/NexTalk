@@ -64,12 +64,12 @@ export default function SignUp() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 text-white backdrop-blur-3xl">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 text-white backdrop-blur-sm bg-clip-padding backdrop-filter">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0  p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md"
+        className="backdrop-blur-sm bg-opacity-0  p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md"
       >
         <h2 className="text-3xl font-bold text-center text-white mb-6">
           Create an Account 🚀
@@ -86,6 +86,7 @@ export default function SignUp() {
               name="fullName"
               value={signupfields.fullName}
               onChange={handleChange}
+              autoComplete="fullName"
               placeholder="Enter your full name"
               className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
               required
@@ -103,6 +104,7 @@ export default function SignUp() {
               value={signupfields.username}
               onChange={handleChange}
               placeholder="Choose a username"
+              autoComplete="username"
               className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
               required
             />
@@ -119,6 +121,7 @@ export default function SignUp() {
               value={signupfields.email}
               onChange={handleChange}
               placeholder="Enter your email"
+              autoComplete="email"
               className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
               required
             />
@@ -135,7 +138,7 @@ export default function SignUp() {
               value={signupfields.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              autoComplete
+              autoComplete="new-password"
               className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
               required
             />
@@ -150,6 +153,7 @@ export default function SignUp() {
               value={signupfields.confirmPassword}
               onChange={handleChange}
               autoComplete
+               autoComplete="new-password"
               placeholder="Confirm your password"
               className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
               required

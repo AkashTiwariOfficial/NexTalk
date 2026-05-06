@@ -15,8 +15,8 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-   
-        const {usernameORemail, password} = credentials;
+
+        const { usernameORemail, password } = credentials;
         const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameORemail);
 
         const body = isEmail
@@ -26,10 +26,9 @@ export default function Login() {
 
         try {
             const data = await Login(body);
-   console.log(data);
+
             if (data) {
                 navigate("/");
-                console.log("working");
             }
 
         } catch (error) {
@@ -47,12 +46,12 @@ export default function Login() {
 
     return (
         <div>
-              <div className="min-h-screen flex items-center justify-center px-4 py-10 text-white backdrop-blur-3xl">
+            <div className="min-h-screen flex items-center justify-center px-4 py-10 text-white backdrop-blur-sm bg-clip-padding backdrop-filter">
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-             className="bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0  p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md"
+                    className="backdrop-blur-lg bg-opacity-0  p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md"
                 >
                     <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
                         Welcome Back 👋
@@ -71,7 +70,7 @@ export default function Login() {
                                 onChange={handleChange}
                                 value={credentials.usernameORemail}
                                 placeholder="Enter your username or email"
-                              className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                         </div>
 
@@ -85,7 +84,7 @@ export default function Login() {
                                 onChange={handleChange}
                                 value={credentials.password}
                                 placeholder="Enter your password"
-  className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                         </div>
 
@@ -101,13 +100,13 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={!credentials.password || !credentials.usernameORemail || loading}
-                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-blue-500/50 transition-all duration-300"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-blue-500/50 transition-all duration-300"
                         >
                             {loading ? "Logging In ..." : "Login"}
                         </button>
                     </form>
 
-                    <p  className="text-sm text-center text-gray-300 mt-6">
+                    <p className="text-sm text-center text-gray-300 mt-6">
                         Don’t have an account?{" "}
                         <Link to="/register" className="text-blue-400 hover:underline font-medium">
                             Sign up

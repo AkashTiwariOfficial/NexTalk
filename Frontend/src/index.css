@@ -1,31 +1,69 @@
 @import "tailwindcss";
 
-#root {
-  min-height: 100vh;
+@theme {
+  /* Surfaces */
+  --color-gc-app:          #0B1A10;
+  --color-gc-sidebar:      #0F2018;
+  --color-gc-sidebar-head: #0A2E16;
+  --color-gc-chat:         #0B1A10;
+  --color-gc-chat-head:    #0F2018;
+  --color-gc-input-bar:    #0F2018;
+  --color-gc-input:        #142A1A;
+  --color-gc-bubble-recv:  #132B1C;
+  --color-gc-bubble-sent:  #1A4D28;
+
+  /* Accent */
+  --color-gc-accent:       #39FF6A;
+  --color-gc-accent-dim:   #27C44E;
+
+  /* Text */
+  --color-gc-text-primary:   #D4F5DC;
+  --color-gc-text-secondary: #6BA878;
+  --color-gc-text-muted:     #3D6E4A;
+  --color-gc-text-on-accent: #061008;
+  --color-gc-text-sent:      #C8F5D4;
+
+  /* Borders */
+  --color-gc-border-strong: #1E4D2B;
+  --color-gc-border-mid:    #1A3D24;
+
+  /* Search tags */
+  --color-gc-chat-tag-bg:     #39FF6A;
+  --color-gc-chat-tag-text:   #061008;
+  --color-gc-global-tag-bg:   #1A4D28;
+  --color-gc-global-tag-text: #39FF6A;
+
+  /* Badges */
+  --color-gc-badge-bg:   #39FF6A;
+  --color-gc-badge-text: #061008;
+
+  /* Monograms */
+  --color-gc-mono-bg:          #1A4D28;
+  --color-gc-mono-text:        #39FF6A;
+  --color-gc-mono-active-bg:   #39FF6A;
+  --color-gc-mono-active-text: #061008;
+
+  /* Contacts */
+  --color-gc-contact-hover:      #112618;
+  --color-gc-contact-active-bg:  #0F3D1E;
+  --color-gc-contact-active-bar: #39FF6A;
+
+  /* Status dots */
+  --color-gc-online:  #39FF6A;
+  --color-gc-away:    #F5A623;
+  --color-gc-offline: #3D6E4A;
 }
 
-html, body {
-height: 100%;
-margin: 0px;
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-body {
-	height: 100vh;
-	background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("/bg.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
-}
+.bubble-recv { border-left: 3px solid var(--color-gc-accent); }
+.bubble-sent { border-right: 3px solid var(--color-gc-accent); }
 
-::-webkit-scrollbar {
-	width: 8px;
-}
-
-::-webkit-scrollbar-track {
-	background: #555;
-}
-
-::-webkit-scrollbar-thumb {
-	background: #121212;
-	border-radius: 5px;
+.accent-glow {
+  box-shadow: 0 0 16px rgba(57, 255, 106, 0.3);
 }

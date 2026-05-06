@@ -17,40 +17,41 @@ function App() {
 
   return (
     <>
-      <LoadingBar
-        height={2}
-        color="#f11946"
-        progress={progress}
-        onLoaderFinished={() => { setProgress(0) }}
-      />
-      <div>
-        <button onClick={notify} className='d-none'>This is a toast</button>
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            success: { duration: 3000 },
-            error: { duration: 3000 },
-            loading: { duration: Infinity },
-            style: {
-              background: "#ffffff",
-              color: "#0f172a",
-            },
-            dark: {
-              style: {
-                background: "rgba(31, 41, 55, 0.8)",
-                color: "#f9fafb",
-                backdropFilter: "blur(8px)",
-              },
-            },
-          }}
+<div style={{ width: '100vw', height: '100vh', display: 'flex', overflow: 'hidden' }}>
+        <LoadingBar
+          height={2}
+          color="#f11946"
+          progress={progress}
+          onLoaderFinished={() => { setProgress(0) }}
         />
+        <div>
+          <button onClick={notify} className='d-none'></button>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              success: { duration: 3000 },
+              error: { duration: 3000 },
+              loading: { duration: Infinity },
+              style: {
+                background: "#ffffff",
+                color: "#0f172a",
+              },
+              dark: {
+                style: {
+                  background: "rgba(31, 41, 55, 0.8)",
+                  color: "#f9fafb",
+                  backdropFilter: "blur(8px)",
+                },
+              },
+            }}
+          />
+        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
       </div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<SignUp />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-
     </>
   )
 }

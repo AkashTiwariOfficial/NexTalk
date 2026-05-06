@@ -13,9 +13,7 @@ export const useSigIn = () => {
     const signIn = async (formData) => {
         setLoading(true);
         const toastId = toast.loading("Creating Account");
-for (var value of formData.values()) {
-console.log(value);
-}
+
         try {
             const response = await axios.post(`${host}/v1/api/auth/register`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -24,7 +22,7 @@ console.log(value);
             if (response.data.success) {
                 setLoading(false);
                 toast.success("Account created successfully 🚀", { id: toastId });
-                  return true;
+                return true;
             }
 
         } catch (error) {
