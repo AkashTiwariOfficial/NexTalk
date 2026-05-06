@@ -1,33 +1,42 @@
-/**
- * components/MessageBubble.jsx
- * Single message row — sent or received.
- *
- * Props:
- *   from  "sent" | "recv"
- *   text  string
- *   time  string
- */
 export default function MessageBubble({ from, text, time }) {
   const isSent = from === 'sent'
 
   return (
     <div
-      className={`flex flex-col gap-[3px] animate-fade-slide-up
-                  ${isSent ? 'items-end' : 'items-start'}`}
-      role="article"
-      aria-label={`${isSent ? 'You' : 'Them'}: ${text}`}
+      className="anim-fade-up"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: isSent ? 'flex-end' : 'flex-start',
+        gap: 4,
+      }}
     >
-      <div
-        className={`max-w-[70%] px-[12px] py-[8px] font-body text-[10.5px]
-                    leading-relaxed border
-                    ${isSent
-                      ? 'bg-gc-bubbleSent text-gc-textSent border-gc-borderStrong border-r-[3px] border-r-gc-accent shadow-bubble'
-                      : 'bg-gc-bubbleRecv text-gc-textPrimary border-gc-borderStrong border-l-[3px] border-l-gc-accent'
-                    }`}
-      >
+      <div style={{
+        maxWidth: '68%',
+        padding: '10px 14px',
+        borderRadius: isSent ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
+        background: isSent
+          ? 'var(--color-x-accent)'
+          : 'var(--color-x-surface3)',
+        color: isSent ? '#fff' : 'var(--color-x-recv-text)',
+        fontSize: 13,
+        lineHeight: 1.55,
+        fontWeight: 400,
+        border: isSent
+          ? 'none'
+          : '1px solid var(--color-x-border)',
+        boxShadow: isSent
+          ? '0 4px 20px var(--color-x-accent-soft)'
+          : 'none',
+        wordBreak: 'break-word',
+      }}>
         {text}
       </div>
-      <span className="font-display text-[7.5px] tracking-[0.12em] text-gc-textMuted px-[3px]">
+      <span style={{
+        fontSize: 10,
+        color: 'var(--color-x-text3)',
+        padding: '0 4px',
+      }}>
         {time}
       </span>
     </div>

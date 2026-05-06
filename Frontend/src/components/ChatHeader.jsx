@@ -1,80 +1,102 @@
-/**
- * components/ChatHeader.jsx
- * Top bar of the chat window.
- *
- * Props:
- *   contact  { initials, name, status }
- */
 const STATUS_LABEL = { online: 'Online', away: 'Away', offline: 'Offline' }
-const DOT_CLASS = {
-  online:  'bg-gc-online shadow-[0_0_8px_rgba(57,255,106,0.5)]',
-  away:    'bg-gc-away',
-  offline: 'bg-gc-offline',
+const STATUS_COLOR = {
+  online:  'var(--color-x-online)',
+  away:    'var(--color-x-away)',
+  offline: 'var(--color-x-offline)',
+}
+
+function ActionBtn({ label, children }) {
+  return (
+    <button
+      aria-label={label}
+      style={{
+        width: 34, height: 34, borderRadius: 8,
+        background: 'var(--color-x-surface3)',
+        border: '1px solid var(--color-x-border)',
+        color: 'var(--color-x-text2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', transition: 'all 0.15s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-x-accent)'; e.currentTarget.style.color = 'var(--color-x-accent)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-x-border)'; e.currentTarget.style.color = 'var(--color-x-text2)' }}
+    >
+      {children}
+    </button>
+  )
 }
 
 export default function ChatHeader({ contact }) {
   return (
-    <div className="flex items-center justify-between px-[17px] py-[11px]
-                    bg-gc-chatHead border-b border-gc-borderStrong flex-shrink-0">
+    <div style={{
+      height: 64,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 20px',
+      background: 'var(--color-x-surface)',
+      borderBottom: '1px solid var(--color-x-border)',
+      flexShrink: 0,
+    }}>
 
-      {/* Left: avatar + info */}
-      <div className="flex items-center gap-[11px]">
-        <div className="relative">
-          <div className="w-[37px] h-[37px] bg-gc-monoActiveBg text-gc-monoActiveText
-                          flex items-center justify-center font-display text-[14px]
-                          border border-gc-accent shadow-accent-glow">
+      {/* Left */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12,
+            background: 'var(--color-x-accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 500, color: '#fff',
+            boxShadow: '0 0 20px var(--color-x-accent-soft)',
+          }}>
             {contact.initials}
           </div>
-          <span
-            className={`absolute -bottom-[2px] -right-[2px] w-[9px] h-[9px] rounded-full
-                        border-[1.5px] border-gc-chatHead ${DOT_CLASS[contact.status]}`}
-            aria-label={STATUS_LABEL[contact.status]}
-          />
+          <div style={{
+            position: 'absolute', bottom: -1, right: -1,
+            width: 11, height: 11, borderRadius: '50%',
+            background: STATUS_COLOR[contact.status],
+            border: '2px solid var(--color-x-surface)',
+            boxShadow: contact.status === 'online' ? '0 0 8px #22C55E88' : 'none',
+          }} />
         </div>
-
         <div>
-          <div className="font-display text-[15px] tracking-[0.06em] text-gc-textPrimary leading-none">
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-x-text)', letterSpacing: '-0.01em' }}>
             {contact.name}
           </div>
-          <div className="flex items-center gap-[5px] mt-[3px]">
-            <span className="w-[5px] h-[5px] bg-gc-accent rounded-full
-                             shadow-[0_0_6px_rgba(57,255,106,0.5)] animate-pulse-dot" />
-            <span className="font-display text-[8.5px] tracking-[0.12em] uppercase
-                             text-gc-textSecondary">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: STATUS_COLOR[contact.status],
+              display: 'inline-block',
+            }} className={contact.status === 'online' ? 'anim-pulse' : ''} />
+            <span style={{ fontSize: 11, color: 'var(--color-x-text2)' }}>
               {STATUS_LABEL[contact.status]}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Right: action buttons */}
-      <div className="flex gap-[5px]" role="toolbar" aria-label="Chat actions">
-        {[
-          { label: 'Search in chat', icon: (
-            <><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></>
-          )},
-          { label: 'Start call', icon: (
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.5a16 16 0 0 0 5.6 5.6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-          )},
-          { label: 'More options', icon: (
-            <><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></>
-          )},
-        ].map(({ label, icon }) => (
-          <button
-            key={label}
-            aria-label={label}
-            className="w-[29px] h-[29px] border border-gc-borderStrong bg-transparent
-                       text-gc-textSecondary flex items-center justify-center
-                       hover:border-gc-accent hover:text-gc-accent
-                       hover:shadow-[0_0_10px_rgba(57,255,106,0.25)]
-                       transition-all duration-150 cursor-pointer"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              {icon}
-            </svg>
-          </button>
-        ))}
+      {/* Right actions */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <ActionBtn label="Search in chat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+          </svg>
+        </ActionBtn>
+        <ActionBtn label="Call">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </ActionBtn>
+        <ActionBtn label="Video">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+        </ActionBtn>
+        <ActionBtn label="More">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
+          </svg>
+        </ActionBtn>
       </div>
     </div>
   )

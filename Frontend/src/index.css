@@ -1,69 +1,76 @@
 @import "tailwindcss";
 
 @theme {
-  /* Surfaces */
-  --color-gc-app:          #0B1A10;
-  --color-gc-sidebar:      #0F2018;
-  --color-gc-sidebar-head: #0A2E16;
-  --color-gc-chat:         #0B1A10;
-  --color-gc-chat-head:    #0F2018;
-  --color-gc-input-bar:    #0F2018;
-  --color-gc-input:        #142A1A;
-  --color-gc-bubble-recv:  #132B1C;
-  --color-gc-bubble-sent:  #1A4D28;
+  --color-x-bg:           #0D0D0D;
+  --color-x-surface:      #141414;
+  --color-x-surface2:     #1A1A1A;
+  --color-x-surface3:     #202020;
+  --color-x-border:       #2A2A2A;
+  --color-x-border2:      #333333;
 
-  /* Accent */
-  --color-gc-accent:       #39FF6A;
-  --color-gc-accent-dim:   #27C44E;
+  --color-x-accent:       #6C63FF;
+  --color-x-accent-hover: #5A52E0;
+  --color-x-accent-soft:  #6C63FF22;
 
-  /* Text */
-  --color-gc-text-primary:   #D4F5DC;
-  --color-gc-text-secondary: #6BA878;
-  --color-gc-text-muted:     #3D6E4A;
-  --color-gc-text-on-accent: #061008;
-  --color-gc-text-sent:      #C8F5D4;
+  --color-x-sent:         #6C63FF;
+  --color-x-sent-text:    #FFFFFF;
+  --color-x-recv:         #1E1E1E;
+  --color-x-recv-text:    #E8E8E8;
 
-  /* Borders */
-  --color-gc-border-strong: #1E4D2B;
-  --color-gc-border-mid:    #1A3D24;
+  --color-x-text:         #F0F0F0;
+  --color-x-text2:        #A0A0A0;
+  --color-x-text3:        #555555;
 
-  /* Search tags */
-  --color-gc-chat-tag-bg:     #39FF6A;
-  --color-gc-chat-tag-text:   #061008;
-  --color-gc-global-tag-bg:   #1A4D28;
-  --color-gc-global-tag-text: #39FF6A;
+  --color-x-online:       #22C55E;
+  --color-x-away:         #F59E0B;
+  --color-x-offline:      #444444;
 
-  /* Badges */
-  --color-gc-badge-bg:   #39FF6A;
-  --color-gc-badge-text: #061008;
+  --color-x-badge:        #EF4444;
+  --color-x-badge-text:   #FFFFFF;
 
-  /* Monograms */
-  --color-gc-mono-bg:          #1A4D28;
-  --color-gc-mono-text:        #39FF6A;
-  --color-gc-mono-active-bg:   #39FF6A;
-  --color-gc-mono-active-text: #061008;
-
-  /* Contacts */
-  --color-gc-contact-hover:      #112618;
-  --color-gc-contact-active-bg:  #0F3D1E;
-  --color-gc-contact-active-bar: #39FF6A;
-
-  /* Status dots */
-  --color-gc-online:  #39FF6A;
-  --color-gc-away:    #F5A623;
-  --color-gc-offline: #3D6E4A;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  background: var(--color-x-bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-.bubble-recv { border-left: 3px solid var(--color-gc-accent); }
-.bubble-sent { border-right: 3px solid var(--color-gc-accent); }
+/* Scrollbar */
+.scroll::-webkit-scrollbar       { width: 4px; }
+.scroll::-webkit-scrollbar-track { background: transparent; }
+.scroll::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; }
+.scroll::-webkit-scrollbar-thumb:hover { background: #6C63FF; }
 
-.accent-glow {
-  box-shadow: 0 0 16px rgba(57, 255, 106, 0.3);
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40%           { opacity: 1;   transform: scale(1.1); }
+}
+
+.anim-fade-up { animation: fadeUp 0.2s ease-out forwards; }
+.anim-pulse   { animation: pulse 2s infinite; }
+.anim-blink   { animation: blink 1.4s infinite; }
+.delay-1      { animation-delay: 0.15s; }
+.delay-2      { animation-delay: 0.3s; }

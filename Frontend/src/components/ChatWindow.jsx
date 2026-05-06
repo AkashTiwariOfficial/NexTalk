@@ -1,12 +1,3 @@
-/**
- * components/ChatWindow.jsx
- * Main chat area: header, message thread, typing indicator, input bar.
- *
- * Props:
- *   contact   { id, initials, name, status }
- *   messages  { id, from, text, time }[]
- *   onSend    (text: string) => void
- */
 import { useEffect, useRef } from 'react'
 import ChatHeader      from './ChatHeader'
 import MessageBubble   from './MessageBubble'
@@ -16,55 +7,67 @@ import MessageInput    from './MessageInput'
 export default function ChatWindow({ contact, messages, onSend }) {
   const bottomRef = useRef(null)
 
-  // Auto-scroll to latest message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   return (
-    <section
-      className="flex-1 flex flex-col bg-gc-chat min-w-0"
-      aria-label={`Conversation with ${contact.name}`}
-    >
+    <div style={{
+      flex: 1,
+      minWidth: 0,
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'var(--color-x-bg)',
+    }}>
+
       {/* Header */}
       <ChatHeader contact={contact} />
 
-      {/* Message area */}
+      {/* Messages */}
       <div
-        className="flex-1 overflow-y-auto scrollbar-gc px-[18px] py-[14px]
-                   flex flex-col gap-[9px]"
-        role="log"
-        aria-live="polite"
-        aria-label="Messages"
+        className="scroll"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          minHeight: 0,
+          padding: '24px 24px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
       >
         {/* Date divider */}
-        <div className="flex items-center gap-[10px] mb-[3px]" aria-label="Today">
-          <span className="flex-1 h-px bg-gc-borderMid" />
-          <span className="font-display text-[7.5px] tracking-[0.2em] text-gc-textMuted">
-            TODAY
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8,
+        }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--color-x-border)' }} />
+          <span style={{
+            fontSize: 10, fontWeight: 500,
+            color: 'var(--color-x-text3)',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            padding: '3px 10px',
+            background: 'var(--color-x-surface3)',
+            borderRadius: 20,
+            border: '1px solid var(--color-x-border)',
+          }}>
+            Today
           </span>
-          <span className="flex-1 h-px bg-gc-borderMid" />
+          <div style={{ flex: 1, height: 1, background: 'var(--color-x-border)' }} />
         </div>
 
-        {/* Messages */}
-        {messages.map((msg) => (
-          <MessageBubble
-            key={msg.id}
-            from={msg.from}
-            text={msg.text}
-            time={msg.time}
-          />
+        {messages.map(msg => (
+          <MessageBubble key={msg.id} from={msg.from} text={msg.text} time={msg.time} />
         ))}
 
-        {/* Typing indicator */}
         <TypingIndicator initials={contact.initials} />
 
-        {/* Scroll anchor */}
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
+      {/* Input */}
       <MessageInput onSend={onSend} />
-    </section>
+    </div>
   )
 }

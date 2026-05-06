@@ -1,94 +1,103 @@
-/**
- * components/ContactItem.jsx
- * Single row in the contact list.
- *
- * Props:
- *   contact   Contact object
- *   isActive  boolean
- *   highlight string — global search term to highlight in preview
- *   onClick   () => void
- */
-function StatusDot({ status }) {
-  const colors = {
-    online:  'bg-gc-online shadow-[0_0_6px_rgba(57,255,106,0.5)]',
-    away:    'bg-gc-away',
-    offline: 'bg-gc-offline',
-  }
-  return (
-    <span
-      className={`absolute -bottom-0.5 -right-0.5 w-[8px] h-[8px] rounded-full
-                  border-[1.5px] border-gc-sidebar ${colors[status] ?? colors.offline}`}
-      aria-label={status}
-    />
-  )
-}
-
-function HighlightedText({ text, highlight }) {
-  if (!highlight) return <span>{text}</span>
-  const re  = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  const parts = text.split(re)
-  return (
-    <span>
-      {parts.map((part, i) =>
-        re.test(part)
-          ? <mark key={i} className="bg-gc-accent text-gc-textOnAccent px-px">{part}</mark>
-          : part
-      )}
-    </span>
-  )
+const STATUS = {
+  online:  { color: 'var(--color-x-online)',  glow: '0 0 6px #22C55E88' },
+  away:    { color: 'var(--color-x-away)',    glow: 'none' },
+  offline: { color: 'var(--color-x-offline)', glow: 'none' },
 }
 
 export default function ContactItem({ contact, isActive, highlight, onClick }) {
+  const s = STATUS[contact.status] ?? STATUS.offline
+
+  const highlightText = (text) => {
+    if (!highlight) return text
+    const re = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+    return text.split(re).map((p, i) =>
+      re.test(p)
+        ? <mark key={i} style={{ background: 'var(--color-x-accent)', color: '#fff', borderRadius: 2, padding: '0 2px' }}>{p}</mark>
+        : p
+    )
+  }
+
   return (
     <div
+      onClick={onClick}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick()}
+      tabIndex={0}
       role="option"
       aria-selected={isActive}
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
-      className={`flex items-center gap-[9px] px-3 py-[9px] border-b border-gc-borderMid
-                  cursor-pointer transition-colors duration-100 outline-none
-                  focus-visible:border-gc-accent
-                  ${isActive
-                    ? 'bg-gc-contactActiveBg border-l-[3px] border-l-gc-contactActiveBar shadow-[inset_3px_0_12px_rgba(57,255,106,0.12)]'
-                    : 'hover:bg-gc-contactHover'
-                  }`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '11px 16px',
+        cursor: 'pointer',
+        background: isActive ? 'var(--color-x-surface3)' : 'transparent',
+        borderLeft: isActive ? '2px solid var(--color-x-accent)' : '2px solid transparent',
+        transition: 'all 0.15s',
+        outline: 'none',
+      }}
+      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--color-x-surface2)' }}
+      onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
     >
-      {/* Avatar + status dot */}
-      <div className="relative flex-shrink-0">
-        <div
-          className={`w-[33px] h-[33px] flex items-center justify-center
-                      font-display text-[12px] border border-gc-borderStrong
-                      ${isActive
-                        ? 'bg-gc-monoActiveBg text-gc-monoActiveText shadow-accent-glow'
-                        : 'bg-gc-monoBg text-gc-monoText'
-                      }`}
-        >
+      {/* Avatar */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div style={{
+          width: 40, height: 40,
+          borderRadius: '12px',
+          background: isActive ? 'var(--color-x-accent)' : 'var(--color-x-surface3)',
+          color: isActive ? '#fff' : 'var(--color-x-accent)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 12,
+          fontWeight: 500,
+          border: `1px solid ${isActive ? 'var(--color-x-accent)' : 'var(--color-x-border2)'}`,
+          boxShadow: isActive ? '0 0 16px var(--color-x-accent-soft)' : 'none',
+          transition: 'all 0.15s',
+        }}>
           {contact.initials}
         </div>
-        <StatusDot status={contact.status} />
+        {/* Status dot */}
+        <div style={{
+          position: 'absolute', bottom: -1, right: -1,
+          width: 10, height: 10,
+          borderRadius: '50%',
+          background: s.color,
+          border: '2px solid var(--color-x-surface)',
+          boxShadow: s.glow,
+        }} />
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-baseline gap-1">
-          <span className={`font-body text-[11px] font-medium truncate
-                            ${isActive ? 'text-gc-accent' : 'text-gc-textPrimary'}`}>
+      {/* Text */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            fontSize: 13, fontWeight: 500,
+            color: isActive ? 'var(--color-x-text)' : 'var(--color-x-text)',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
             {contact.name}
           </span>
-          <span className="font-display text-[7.5px] text-gc-textMuted whitespace-nowrap flex-shrink-0">
+          <span style={{ fontSize: 10, color: 'var(--color-x-text3)', flexShrink: 0, marginLeft: 8 }}>
             {contact.time}
           </span>
         </div>
-        <div className="flex justify-between items-center mt-0.5">
-          <span className="font-body text-[9px] text-gc-textSecondary truncate">
-            <HighlightedText text={contact.preview} highlight={highlight} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+          <span style={{
+            fontSize: 11, color: 'var(--color-x-text2)',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            {highlightText(contact.preview)}
           </span>
           {contact.unread > 0 && (
-            <span className="ml-1 min-w-[16px] h-[16px] bg-gc-badgeBg text-gc-badgeText
-                             font-display text-[7.5px] flex items-center justify-center
-                             px-[3px] rounded-sm flex-shrink-0"
-                  aria-label={`${contact.unread} unread`}>
+            <span style={{
+              marginLeft: 6,
+              minWidth: 18, height: 18,
+              borderRadius: '50%',
+              background: 'var(--color-x-accent)',
+              color: '#fff',
+              fontSize: 9, fontWeight: 600,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}>
               {contact.unread}
             </span>
           )}
