@@ -1,102 +1,94 @@
-const STATUS = {
-  online:  { color: 'var(--color-x-online)',  glow: '0 0 6px #22C55E88' },
-  away:    { color: 'var(--color-x-away)',    glow: 'none' },
-  offline: { color: 'var(--color-x-offline)', glow: 'none' },
+import { useState } from 'react'
+import Avatar from './Avatar'
+
+function highlight(text, query) {
+  if (!query) return text
+  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.split(re).map((p, i) =>
+    re.test(p)
+      ? <mark key={i} style={{ background:'var(--color-x-accent)', color:'#fff', borderRadius:3, padding:'0 2px' }}>{p}</mark>
+      : p
+  )
 }
 
-export default function ContactItem({ contact, isActive, highlight, onClick }) {
-  const s = STATUS[contact.status] ?? STATUS.offline
-
-  const highlightText = (text) => {
-    if (!highlight) return text
-    const re = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-    return text.split(re).map((p, i) =>
-      re.test(p)
-        ? <mark key={i} style={{ background: 'var(--color-x-accent)', color: '#fff', borderRadius: 2, padding: '0 2px' }}>{p}</mark>
-        : p
-    )
-  }
+export default function ContactItem({ contact, isActive, searchQuery, onClick }) {
+  const [hovered, setHovered] = useState(false)
 
   return (
     <div
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick()}
       tabIndex={0}
       role="option"
       aria-selected={isActive}
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '11px 16px',
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '10px 16px',
         cursor: 'pointer',
-        background: isActive ? 'var(--color-x-surface3)' : 'transparent',
-        borderLeft: isActive ? '2px solid var(--color-x-accent)' : '2px solid transparent',
+        background: isActive
+          ? 'linear-gradient(90deg, var(--color-x-s4), var(--color-x-s3))'
+          : hovered ? 'var(--color-x-s2)' : 'transparent',
+        borderLeft: `2.5px solid ${isActive ? 'var(--color-x-accent)' : 'transparent'}`,
         transition: 'all 0.15s',
         outline: 'none',
+        position: 'relative',
       }}
-      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--color-x-surface2)' }}
-      onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
     >
-      {/* Avatar */}
-      <div style={{ position: 'relative', flexShrink: 0 }}>
+      {/* Subtle active glow */}
+      {isActive && (
         <div style={{
-          width: 40, height: 40,
-          borderRadius: '12px',
-          background: isActive ? 'var(--color-x-accent)' : 'var(--color-x-surface3)',
-          color: isActive ? '#fff' : 'var(--color-x-accent)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          fontWeight: 500,
-          border: `1px solid ${isActive ? 'var(--color-x-accent)' : 'var(--color-x-border2)'}`,
-          boxShadow: isActive ? '0 0 16px var(--color-x-accent-soft)' : 'none',
-          transition: 'all 0.15s',
-        }}>
-          {contact.initials}
-        </div>
-        {/* Status dot */}
-        <div style={{
-          position: 'absolute', bottom: -1, right: -1,
-          width: 10, height: 10,
-          borderRadius: '50%',
-          background: s.color,
-          border: '2px solid var(--color-x-surface)',
-          boxShadow: s.glow,
+          position:'absolute', inset:0, pointerEvents:'none',
+          background: 'linear-gradient(90deg, var(--color-x-glow2), transparent)',
         }} />
-      </div>
+      )}
 
-      {/* Text */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Avatar
+        initials={contact.initials}
+        gradient={contact.gradient}
+        size={42}
+        radius={13}
+        status={contact.status}
+        glow={isActive}
+      />
+
+      <div style={{ flex:1, minWidth:0, position:'relative' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:6 }}>
           <span style={{
-            fontSize: 13, fontWeight: 500,
-            color: isActive ? 'var(--color-x-text)' : 'var(--color-x-text)',
+            fontSize: 13, fontWeight: isActive ? 600 : 500,
+            color: isActive ? 'var(--color-x-t1)' : 'var(--color-x-t1)',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            letterSpacing: '-0.01em',
           }}>
             {contact.name}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--color-x-text3)', flexShrink: 0, marginLeft: 8 }}>
+          <span style={{
+            fontSize: 10, color: isActive ? 'var(--color-x-accent2)' : 'var(--color-x-t3)',
+            whiteSpace: 'nowrap', flexShrink: 0,
+            fontFamily: 'var(--font-mono)',
+            transition: 'color 0.15s',
+          }}>
             {contact.time}
           </span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 3, gap: 6 }}>
           <span style={{
-            fontSize: 11, color: 'var(--color-x-text2)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            fontSize: 12, color: 'var(--color-x-t2)',
+            whiteSpace: 'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+            lineHeight: 1.3,
           }}>
-            {highlightText(contact.preview)}
+            {highlight(contact.preview, searchQuery)}
           </span>
           {contact.unread > 0 && (
             <span style={{
-              marginLeft: 6,
-              minWidth: 18, height: 18,
-              borderRadius: '50%',
+              minWidth: 18, height: 18, borderRadius: 99,
               background: 'var(--color-x-accent)',
-              color: '#fff',
-              fontSize: 9, fontWeight: 600,
+              color: '#fff', fontSize: 10, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
+              padding: '0 5px', flexShrink: 0,
+              boxShadow: '0 2px 8px var(--color-x-glow)',
             }}>
               {contact.unread}
             </span>
