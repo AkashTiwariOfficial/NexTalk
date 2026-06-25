@@ -11,6 +11,14 @@ export const fetchAlUser = asyncHandler(async (req, res) => {
     participants: { $in: [req.user?._id] }
   }).populate("participants", "username avatar fullName");
 
+ conversations.forEach(conv => {
+  const others = conv.participants.filter(
+    p => p._id.toString() !== req.user._id.toString()
+  );
+  conv.participants = others.length > 0 ? others : [conv.participants[0]];
+});
+
+
   return res.status(200)
     .json(new ApiResponses(200, conversations, "User conversations fetched successfully"));
 })

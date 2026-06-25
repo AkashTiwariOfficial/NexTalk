@@ -1,9 +1,21 @@
 import SearchBar    from './SearchBar'
 import ContactItem  from './ContactItem'
 import Avatar       from './Avatar'
+import { useChatContext } from '../hookes/context/useChatContext.jsx';
+import { useGetMessages } from '../hookes/ApiCalls/useGetMessages.jsx';
+import { useCallback } from 'react';
 
 export default function Sidebar({ contacts, activeId, chatSearch, setChatSearch, globalSearch, setGlobalSearch, onSelect }) {
-  const totalUnread = contacts.reduce((a, c) => a + (c.unread || 0), 0)
+
+
+    const { currentUser } = useChatContext();
+    const { fetchMessages } = useGetMessages();
+
+ const getAllMessages = useCallback(async (id) => {
+  await fetchMessages(id);
+}, [activeId]);
+
+  const totalUnread = contacts.reduce((a, c) => a + (c.unread || 0), 0);
 
   return (
     <div style={{
@@ -127,11 +139,12 @@ export default function Sidebar({ contacts, activeId, chatSearch, setChatSearch,
         )}
         {contacts.map(c => (
           <ContactItem
-            key={c.id}
+            key={c._id}
             contact={c}
-            isActive={c.id === activeId}
+            isActive={c._id === activeId}
             searchQuery={globalSearch}
-            onClick={() => onSelect(c.id)}
+            onClick={() => {onSelect(c._id); getAllMessages(c._id);}}
+            
           />
         ))}
       </div>
@@ -145,7 +158,7 @@ export default function Sidebar({ contacts, activeId, chatSearch, setChatSearch,
         background: 'linear-gradient(0deg, var(--color-x-s2), transparent)',
       }}>
         <Avatar
-          initials="ME"
+          image={currentUser?.avatar}
           gradient="linear-gradient(135deg,#7B6FFF,#A855F7)"
           size={34}
           radius={10}

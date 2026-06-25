@@ -45,11 +45,10 @@ export default function ContactItem({ contact, isActive, searchQuery, onClick })
       )}
 
       <Avatar
-        initials={contact.initials}
-        gradient={contact.gradient}
+        image={contact?.participants[0]?.avatar}
         size={42}
         radius={13}
-        status={contact.status}
+        status={contact?.status}
         glow={isActive}
       />
 
@@ -61,7 +60,7 @@ export default function ContactItem({ contact, isActive, searchQuery, onClick })
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             letterSpacing: '-0.01em',
           }}>
-            {contact.name}
+            {contact?.participants[0]?.fullName}
           </span>
           <span style={{
             fontSize: 10, color: isActive ? 'var(--color-x-accent2)' : 'var(--color-x-t3)',

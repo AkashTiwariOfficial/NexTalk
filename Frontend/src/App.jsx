@@ -4,7 +4,7 @@ import SignUp from './Pages/authorize/SignIn';
 import { Route, Routes } from 'react-router-dom';
 import Login from './Pages/authorize/Login';
 import Home from './Pages/home/Home';
-import { useChat } from './hookes/context/useChat';
+import { useChatContext } from './hookes/context/useChatContext';
 import LoadingBar from 'react-top-loading-bar';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
 
-  const { progress, setProgress } = useChat
+  const { progress, setProgress } = useChatContext();
   const notify = () => toast('Here is your toast');
 
   return (

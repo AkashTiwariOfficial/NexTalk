@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useChat } from "../../hookes/context/useChat.jsx";
 import { useSigIn } from "../../hookes/auth/useSigIn.jsx";
 
 export default function SignUp() {
-  const { host } = useChat();
   const { signIn, loading } = useSigIn();
   const navigate = useNavigate();
 

@@ -71,13 +71,14 @@ const sendMessage = asyncHandler(async (req, res) => {
 })
 
 const getAllMessages = asyncHandler(async (req, res) => {
+
     const { id: conversationId } = req.params;
     
     const conversation = await Conversation.findById(conversationId);
     const clearedTime = conversation.clearedAt?.get(req.user?._id);
-    const messages = await Message.find(conversationId, {
+    const messages = await Message.find({conversationId,
         createdAt: {
-            $gt: clearedTime || Date.now(0)
+            $gt: clearedTime || new Date(0)
         }
     })
 

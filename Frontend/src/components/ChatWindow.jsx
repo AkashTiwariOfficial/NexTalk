@@ -5,11 +5,13 @@ import TypingIndicator from './TypingIndicator'
 import MessageInput    from './MessageInput'
 
 export default function ChatWindow({ contact, messages, onSend }) {
-  const bottomRef = useRef(null)
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, contact])
+  }, [messages, contact]);
+
+  console.log(messages);
 
   return (
     <div style={{
@@ -44,8 +46,8 @@ export default function ChatWindow({ contact, messages, onSend }) {
         </div>
 
         {messages.map((msg, i) => (
-          <div key={msg.id} className="anim-up" style={{ animationDelay: `${Math.min(i * 0.03, 0.15)}s` }}>
-            <MessageBubble from={msg.from} text={msg.text} time={msg.time} />
+          <div key={msg?._id} className="anim-up" style={{ animationDelay: `${Math.min(i * 0.03, 0.15)}s` }}>
+            <MessageBubble from={msg?.sender} text={msg?.message} time={msg?.updatedAt} />
           </div>
         ))}
 

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ChatContext } from "../../Conntext/chat/ChatContext.jsx";
 
-export const useChat = () => {
+export const useChatContext = () => {
     return useContext(ChatContext);
 };

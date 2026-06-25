@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useChat } from "../context/useChat.jsx";
+import { useChatContext } from "../context/useChatContext.jsx";
 import { useState } from "react";
 import toast from 'react-hot-toast';
 
@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export const useLogout = () => {
 
     const [loading, setLoading] = useState(false);
-    const { host, token } = useChat();
+    const { host, token } = useChatContext();
 
     const Logout = async () => {
         setLoading(true);

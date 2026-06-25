@@ -1,6 +1,7 @@
 export default function MessageBubble({ from, text, time }) {
   const isSent = from === 'sent'
 
+
   return (
     <div
       className="anim-up"

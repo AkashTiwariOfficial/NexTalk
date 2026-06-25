@@ -1,18 +1,21 @@
-import { useState, useCallback } from 'react'
-import { CONTACTS, MESSAGES } from '../data/data'
+import { useState, useCallback, useEffect } from 'react';
+import { CONTACTS, MESSAGES } from '../data/data';
+import { useChatContext } from './context/useChatContext.jsx';
 
 export function useChat() {
-  const [activeId,     setActiveId]     = useState(CONTACTS[0].id)
-  const [allMessages,  setAllMessages]  = useState(MESSAGES)
-  const [chatSearch,   setChatSearch]   = useState('')
-  const [globalSearch, setGlobalSearch] = useState('')
 
-  const filteredContacts = CONTACTS.filter(c =>
-    c.name.toLowerCase().includes(chatSearch.toLowerCase()) ||
-    c.preview.toLowerCase().includes(chatSearch.toLowerCase())
-  )
+  const { currentUser, contacts, allMessages, setAllMessages } = useChatContext();
+  const [activeId,     setActiveId]  = useState(null);
+  const [chatSearch,   setChatSearch]   = useState('');
+  const [globalSearch, setGlobalSearch] = useState('');
 
-  const selectContact = useCallback((id) => setActiveId(id), [])
+
+/*   const filteredContacts = contacts.filter(c =>
+    c.name.toLowerCase().includes(chatSearch?.toLowerCase()) ||
+    c.preview.toLowerCase().includes(chatSearch?.toLowerCase())
+  ) */
+
+  const selectContact = useCallback((id) => setActiveId(id), []);
 
   const sendMessage = useCallback((text) => {
     const msg = {
@@ -28,9 +31,9 @@ export function useChat() {
   }, [activeId])
 
   return {
-    contacts: filteredContacts,
-    activeContact: CONTACTS.find(c => c.id === activeId),
-    messages: allMessages[activeId] ?? [],
+    contacts: contacts,
+    activeContact: contacts.find(c => c._id === activeId || null),
+    messages: allMessages,
     chatSearch,   setChatSearch,
     globalSearch, setGlobalSearch,
     selectContact,

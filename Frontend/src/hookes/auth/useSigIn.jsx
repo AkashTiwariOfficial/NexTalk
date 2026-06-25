@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useChat } from "../context/useChat.jsx";
+import { useChatContext } from "../context/useChatContext.jsx";
 import { useState } from "react";
 import toast from 'react-hot-toast';
 
@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 export const useSigIn = () => {
 
     const [loading, setLoading] = useState(false);
-    const { host } = useChat();
+    const { host } = useChatContext();
 
     const signIn = async (formData) => {
         setLoading(true);

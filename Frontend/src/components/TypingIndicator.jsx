@@ -3,7 +3,7 @@ import Avatar from './Avatar'
 export default function TypingIndicator({ contact }) {
   return (
     <div style={{ display:'flex', alignItems:'flex-end', gap: 8 }}>
-      <Avatar initials={contact.initials} gradient={contact.gradient} size={28} radius={9} />
+      <Avatar  image={contact?.participants[0]?.avatar} size={28} radius={9} />
       <div style={{
         padding: '10px 16px',
         borderRadius: '4px 18px 18px 18px',
