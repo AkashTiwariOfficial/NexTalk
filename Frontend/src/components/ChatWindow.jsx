@@ -55,7 +55,7 @@ export default function ChatWindow({ contact, messages, onSend }) {
         <div ref={bottomRef} />
       </div>
 
-      <MessageInput onSend={onSend} />
+      <MessageInput reciver={contact?.participants[0]?._id} onSend={onSend} />
     </div>
   )
 }

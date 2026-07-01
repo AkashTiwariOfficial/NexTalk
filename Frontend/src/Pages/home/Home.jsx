@@ -47,8 +47,9 @@ export default function Home() {
           onSend={sendMessage}
         />
       </div>
-   {/*    <Link to="/login" className='bg-blue p-5 text-white'>Login</Link> */}
+ 
 
     </div>
   )
 }
+//  <Link to="/register" className='bg-blue p-5 text-white'>Login</Link> 
