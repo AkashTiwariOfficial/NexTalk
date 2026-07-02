@@ -19,15 +19,15 @@ export function useChat() {
 
   const selectContact = useCallback((id) => setActiveId(id), []);
 
-  const sendMessage = useCallback((text) => {
-    const body = {
+  const sendMessage = useCallback((text, reciver) => {
+    const info = {
       message: text,
-      recieverId: activeId
+      recieverId: reciver
     }
-    SendMessage(activeId)
+    SendMessage(activeId, info);
     setAllMessages(prev =>
       [...prev,
-        body],
+        info],
     )
   }, [activeId])
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useChatContext } from "../context/useChatContext.jsx";
 import { useState } from "react";
 import toast from 'react-hot-toast';
-import { info } from "console";
+
 
 
 
@@ -13,9 +13,10 @@ export const useMessage = () => {
     const SendMessage = async (id, info) => {
        
       try {
-            const response = await axios.post(`${host}/v1/api/messages/sendMessage/${id}`, { info } {
+            const response = await axios.post(`${host}/v1/api/messages/sendMessage/${id}`,  info  ,{
                   headers: {
-                    Authorization: `Bearer ${token}`
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
                 },
                 withCredentials: true
             })

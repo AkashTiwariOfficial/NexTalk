@@ -20,7 +20,7 @@ function IconBtn({ label, onClick, children }) {
   )
 }
 
-export default function MessageInput({ onSend }) {
+export default function MessageInput({ reciver, onSend }) {
   const [text, setText] = useState('')
   const [focused, setFocused] = useState(false)
   const ref = useRef(null)
@@ -28,7 +28,7 @@ export default function MessageInput({ onSend }) {
 
   const send = () => {
     if (!canSend) return
-    onSend(text.trim())
+    onSend(text.trim(), reciver)
     setText('')
     ref.current?.focus()
   }

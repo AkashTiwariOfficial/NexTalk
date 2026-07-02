@@ -47,7 +47,7 @@ export default function ChatWindow({ contact, messages, onSend }) {
 
         {messages.map((msg, i) => (
           <div key={msg?._id} className="anim-up" style={{ animationDelay: `${Math.min(i * 0.03, 0.15)}s` }}>
-            <MessageBubble from={msg?.sender} text={msg?.message} time={msg?.updatedAt} />
+            <MessageBubble key={msg?._id} from={msg?.senderId} text={msg?.message} time={msg?.updatedAt} />
           </div>
         ))}
 
